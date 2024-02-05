@@ -14,29 +14,29 @@
 *
 * 3. Check yourself by running "npm run test:dev"
 */
-const fetch = require('node-fetch');
-const fs = require('fs/promises');
+    const fetch = require('node-fetch');
+    const fs = require('fs/promises');
 
-const sendRequest = async () => {
-    try {
+    const sendRequest = async () => {
+        try {
         
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts');
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const filteredData = data.filter(item => item.id < 20);
+
+            await fs.writeFile('./src/response.json', JSON.stringify(filteredData));
+
+            console.log('Response saved successfully.');
+        } 
+        catch (error) {
+            console.error('Error:', error.message);
         }
-
-        const data = await response.json();
-        const filteredData = data.filter(item => item.id < 20);
-
-        await fs.writeFile('./src/response.json', JSON.stringify(filteredData));
-
-        console.log('Response saved successfully.');
-    } 
-    catch (error) {
-        console.error('Error:', error.message);
-    }
-};
+    };
 
 
 /**
@@ -66,35 +66,35 @@ const sendRequest = async () => {
 
 
 
-const jsonParser = async () => {
-    try {
+    const jsonParser = async () => {
+        try {
         
-        const data = await fs.readFile('./src/utils/test.json', 'utf8');
+            const data = await fs.readFile('./src/utils/test.json', 'utf8');
         
-        const jsonFile = JSON.parse(data);
+            const jsonFile = JSON.parse(data);
 
-        const replaceHtml = (jsonFile) => {
-            const parsedData = [];
-            for (let i = 0; i < jsonFile.length; i++) {
-                const entry = jsonFile[i];
-                const docId = `http://doc.epam.com/${entry.name.replace(".html", "")}`;
-                parsedData.push({ docId });
-            }
-            return parsedData;
-        };
+            const replaceHtml = (jsonFile) => {
+                const parsedData = [];
+                for (let i = 0; i < jsonFile.length; i++) {
+                    const entry = jsonFile[i];
+                    const docId = `http://doc.epam.com/${entry.name.replace(".html", "")}`;
+                    parsedData.push({ docId });
+                }
+                return parsedData;
+            };
         
 
-        const parsedData = replaceHtml(jsonFile);
+            const parsedData = replaceHtml(jsonFile);
 
-        await fs.writeFile('./src/parsed.json', JSON.stringify(parsedData, null,2));
+            await fs.writeFile('./src/parsed.json', JSON.stringify(parsedData, null,2));
 
-        console.log('Parsed JSON file created successfully.');
+            console.log('Parsed JSON file created successfully.');
 
-    } 
-    catch (error) {
-        console.error('Error:', error.message);
-    }
-};
+        } 
+        catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
 
 module.exports = {
     sendRequest,
