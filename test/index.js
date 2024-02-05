@@ -30,7 +30,7 @@ describe('JSON Parser', () => {
   });
 
   beforeEach(() => {
-    parserJson = require('../src/parsed.json');
+    parserJson = require('./src/parsed.json');
   });
 
   it('.html should be replaced for every item', () => {

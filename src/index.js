@@ -14,16 +14,30 @@
 *
 * 3. Check yourself by running "npm run test:dev"
 */
+const fetch = require('node-fetch');
 const fs = require('fs/promises');
 
-/**
-* Run fetch method inside the function
-* Use the fs.writeFile method inside the function
-*/
 const sendRequest = async () => {
-//put your code here
+    try {
+        
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
+        const data = await response.json();
+        const filteredData = data.filter(item => item.id < 20);
+
+        await fs.writeFile('./src/response.json', JSON.stringify(filteredData));
+
+        console.log('Response saved successfully.');
+    } 
+    catch (error) {
+        console.error('Error:', error.message);
+    }
 };
+
 
 /**
 * TASK-2: JSON Parser
@@ -50,17 +64,40 @@ const sendRequest = async () => {
 *
 */
 
-const jsonParser = async () => {
-//put your code here
 
-jsonFile.map(item => {
-return {
-  docId: "http://doc.epam.com/" + item.name.replace('.html', '')
-}
-})
+
+const jsonParser = async () => {
+    try {
+        
+        const data = await fs.readFile('./src/utils/test.json', 'utf8');
+        
+        const jsonFile = JSON.parse(data);
+
+        const replaceHtml = (jsonFile) => {
+            const parsedData = [];
+            for (let i = 0; i < jsonFile.length; i++) {
+                const entry = jsonFile[i];
+                const docId = `http://doc.epam.com/${entry.name.replace(".html", "")}`;
+                parsedData.push({ docId });
+            }
+            return parsedData;
+        };
+        
+
+        const parsedData = replaceHtml(jsonFile);
+
+        await fs.writeFile('./src/parsed.json', JSON.stringify(parsedData, null,2));
+
+        console.log('Parsed JSON file created successfully.');
+
+    } 
+    catch (error) {
+        console.error('Error:', error.message);
+    }
 };
 
 module.exports = {
-sendRequest,
-jsonParser
+    sendRequest,
+    jsonParser
 };
+
