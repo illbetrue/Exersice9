@@ -65,39 +65,31 @@
 */
 
 
-
-    const jsonParser = async () => {
-        try {
+async function parseJsonFile() {
+    try {
         
-            const data = await fs.readFile('./src/utils/test.json', 'utf8');
+        const rawData = await fs.readFile('./src/utils/test.json');
+        const jsonData = JSON.parse(rawData);
+
         
-            const jsonFile = JSON.parse(data);
+        const parsedData = jsonData.map(entry => {
+            const docId = `http://doc.epam.com/${entry.name.replace(".html", "")}`;
+            return { docId };
+        });
 
-            const replaceHtml = (jsonFile) => {
-                const parsedData = [];
-                for (let i = 0; i < jsonFile.length; i++) {
-                    const entry = jsonFile[i];
-                    const docId = `http://doc.epam.com/${entry.name.replace(".html", "")}`;
-                    parsedData.push({ docId });
-                }
-                return parsedData;
-            };
         
+        await fs.writeFile('./src/parsed.json', JSON.stringify(parsedData, null, 2));
 
-            const parsedData = replaceHtml(jsonFile);
+        console.log('JSON file parsed successfully!');
+    } catch (error) {
+        console.error('Error parsing JSON file:', error);
+    }
+}
 
-            await fs.writeFile('./src/parsed.json', JSON.stringify(parsedData, null,2));
-
-            console.log('Parsed JSON file created successfully.');
-
-        } 
-        catch (error) {
-            console.error('Error:', error.message);
-        }
-    };
+parseJsonFile();
 
 module.exports = {
     sendRequest,
-    jsonParser
+    parseJsonFile
 };
 
